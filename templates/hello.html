@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Movie Recommender</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=IBM+Plex+Sans&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+  <!-- Bootstrap -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+  <!-- jQuery -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+  <!-- Auto Complete -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tarekraafat/autocomplete.js@7.2.0/dist/css/autoComplete.min.css">
+
+  <!-- External CSS -->
+  <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='style.css') }}">
+
+    <style>
+
+        h1 {
+            font-size: 24px;
+        }
+
+        h2 {
+            font-size: 22px;
+        }
+
+        h3 {
+            font-size: 20px;
+        }
+
+        h1, h2, h3 {
+            text-align: center;
+            color: #FFF;
+        }
+
+            h2 a {
+                color: #0184e3;
+                text-decoration: none;
+            }
+
+                h2 a:hover {
+                    color: #0184e3;
+                    text-decoration: underline;
+                }
+
+            h3 a {
+                color: #00e8ff;
+                text-decoration: none;
+            }
+
+                h3 a:hover {
+                    color: #00e8ff;
+                }
+
+        .container {
+            width: 960px;
+            margin: auto;
+            color: #FFF;
+            font-size: 25px;
+        }
+
+            .container h3 {
+                font-size: 20px;
+            }
+
+        #apiDiv {
+            padding: 10px;
+            padding-left: 20px;
+        }
+
+            #apiDiv input, #apiDiv button {
+                font-size: 25px;
+                color: #000;
+            }
+
+            #apiDiv h4 {
+                margin: 10px 0;
+            }
+
+            #apiDiv .imageDiv {
+                text-align: center;
+            }
+
+                #apiDiv .imageDiv img {
+                    display: none;
+                }
+
+            #apiDiv #message {
+                padding-top: 10px;
+            }
+
+                #apiDiv #message .resultDiv {
+                    background: #FFF;
+                    display: inline-block;
+                }
+
+                    #apiDiv #message .resultDiv > p {
+                        color: #000;
+                        display: inline-block;
+                        width: 95%;
+                        padding: 10px;
+                        border-bottom: double 2px #CCC;
+                    }
+
+                    #apiDiv #message .resultDiv .result {
+                        width: 23%;
+                        height: 300px;
+                        padding: 6px;
+                        float: left;
+                        text-align: center;
+                        cursor: pointer;
+                    }
+
+                        #apiDiv #message .resultDiv .result img {
+                            width: 75%;
+                        }
+
+                        #apiDiv #message .resultDiv .result p {
+                            margin: 0;
+                        }
+
+                            #apiDiv #message .resultDiv .result p a {
+                                color: #808080;
+                                text-decoration: none;
+                                font-size: 20px;
+                                height: 100px;
+                            }
+
+                                #apiDiv #message .resultDiv .result p a:hover {
+                                    text-decoration: underline;
+                                }
+
+        #myModal {
+            color: #000;
+        }
+
+        #reset {
+            padding: 5px 10px;
+            background: #4CAF50;
+            border: none;
+            color: #FFF;
+            cursor: pointer;
+        }
+
+            #reset:hover {
+                color: #4CAF50;
+                background: #FFF;
+            }
+    </style>
+</head>
+<body>
+    <header id="header" class="fixed-top" style="background-color:black;" >
+  <nav class="navbar navbar-expand-lg">
+    <div class="container">
+     <a class="navbar-brand" style="text-align:right;" href="{{ url_for('main.index') }}"><h2>Movie <em>Recommender</em></h2></a>
+     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+   <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav ml-auto">
+          <li class="nav-item active"><a class="nav-link active" href="{{ url_for('main.index') }}">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('main.recommender') }}">Recommender</a></li>
+          {% if current_user.is_authenticated %}
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('main.profile') }}">Profile</a></li>
+          {% endif %}
+          
+          {% if not current_user.is_authenticated %}
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.login') }}">Login</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.signup') }}">Signup</a></li>
+          {% endif %}
+
+          {% if current_user.is_authenticated %}
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a></li>
+          {% endif %}
+      </ul>
+    </div>
+  </div>
+
+    </nav>
+</header>
+<div style="margin-top:80px;">
+    
+    <div class="container">
+        <div id="apiDiv">
+            <div id="submit"><div>
+            <div class="imageDiv">
+                <img src="Image/loading.gif" />
+            </div>
+            <div id="message">
+            </div>
+        </div>
+        <ul id="pagination"></ul>
+    </div>
+
+    <!-- Modal -->
+    <div id="myModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" id="modalTitleH4"></h4>
+                </div>
+                <div class="modal-body" id="modalBodyDiv">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="{{url_for('static', filename='jquery.twbsPagination.js')}}"></script>
+    <script>
+        $(document).ready(function () {
+            $("#reset").click(function (e) {
+                location.reload();
+            });
+
+            $("#submit").ready(function (e) {
+                var validate = Validate();
+                $("#message").html(validate);
+                if (validate.length == 0) {
+                    CallAPI(1);
+                }
+            });
+
+          
+            function CallAPI(page) {
+                $.ajax({
+                    url: "https://api.themoviedb.org/3/discover/movie?with_genres=878" + "&page=" + page + "&include_adult=false",
+                    data: { "api_key": "3356865d41894a2fa9bfa84b2b5f59bb" },
+                    dataType: "json",
+                    success: function (result, status, xhr) {
+                        var resultHtml = $("<div class=\"resultDiv\"><p>Names</p>");
+                        for (i = 0; i < result["results"].length; i++) {
+
+                            var image = result["results"][i]["poster_path"] == null ? "Image/no-image.png" : "https://image.tmdb.org/t/p/w500/" + result["results"][i]["poster_path"];
+
+                            resultHtml.append("<div class=\"result\" resourceId=\"" + result["results"][i]["id"] + "\">" + "<img src=\"" + image + "\" />" + "<p><a>" + result["results"][i]["title"] + "</a></p></div>")
+                        }
+
+                        resultHtml.append("</div>");
+                        $("#message").html(resultHtml);
+
+                        Paging(result["total_pages"]);
+                    },
+                    error: function (xhr, status, error) {
+                        $("#message").html("Result: " + status + " " + error + " " + xhr.status + " " + xhr.statusText)
+                    }
+                });
+            }
+
+            function Validate() {
+                var errorMessage = "";
+                if ($("#searchInput").val() == "") {
+                    errorMessage += "► Enter Search Text";
+                }
+                return errorMessage;
+            }
+
+            function Paging(totalPage) {
+                var obj = $("#pagination").twbsPagination({
+                    totalPages: totalPage,
+                    visiblePages: 5,
+                    onPageClick: function (event, page) {
+                        CallAPI(page);
+                    }
+                });
+            }
+
+        });
+    </script>
+</body>
+</html>

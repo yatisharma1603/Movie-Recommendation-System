@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Movie Recommender</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=IBM+Plex+Sans&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+  <!-- Bootstrap -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+  <!-- jQuery -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+  <!-- Auto Complete -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tarekraafat/autocomplete.js@7.2.0/dist/css/autoComplete.min.css">
+
+  <!-- External CSS -->
+  <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='style.css') }}">
+
+  <script type="text/javascript">
+    var films = {{suggestions|tojson}};
+    $(document).ready(function(){
+      $("#myModal").modal('show');
+    });
+  </script>
+
+</head>
+
+<body>
+ <div id="loader" class="text-center">
+  </div>
+  
+<header id="header" class="fixed-top" >
+  <nav class="navbar navbar-expand-lg">
+    <div class="container">
+     <a class="navbar-brand" style="text-align:right;" href="{{ url_for('main.index') }}"><h2>Movie <em>Recommender</em></h2></a>
+     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+   <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav ml-auto">
+          <li class="nav-item active"><a class="nav-link active" href="{{ url_for('main.index') }}">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('main.recommender') }}">Recommender</a></li>
+          {% if current_user.is_authenticated %}
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('main.profile') }}">Profile</a></li>
+          {% endif %}
+          
+          {% if not current_user.is_authenticated %}
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.login') }}">Login</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.signup') }}">Signup</a></li>
+          {% endif %}
+
+          {% if current_user.is_authenticated %}
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a></li>
+          {% endif %}
+      </ul>
+    </div>
+  </div>
+
+    </nav>
+</header>
+
+ <div class="banner header-text">
+      <div class="banner-item-01">
+          <div class="text-content1">
+         <h2>Want to watch a MOVIE?</h2>
+            <a class="rec-btn" href="{{ url_for('main.recommender') }}" style="margin-left:0px;">Get Recommendations</a>
+    </div>
+    </div>
+  </div>
+
+ 
+        <!-- end container -->
+    <div class="latest-products" style="background-color:#f8f9fa; padding-top:50px;">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12" style="padding-bottom:12px;">
+            <div class="section-heading">
+              <h2>Popular Genres</h2>
+              <a href="products.html"> view all movies <i class="fa fa-angle-right"></i></a>
+            </div>
+          </div>
+
+        <div class="col-md-4">
+            <div class="product-item">
+              <a href="#"><img src="{{ url_for('static',filename='img1.png') }}" alt=""></a>
+              <figcaption class="fig" style="margin:0px 15px 30px 15px;">
+                <button class="btn btn-danger" id="submit"><a href="{{ url_for('main.comedy') }}" style="color:white;"> Comedy</a> </button>
+              </figcaption>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="product-item">
+              <a href="#"><img src="{{ url_for('static',filename='img2.png') }}" alt=""></a>
+              <figcaption class="fig" style="margin:0px 15px 30px 15px;">
+                <button class="btn btn-danger"><a href="{{ url_for('main.adventure') }}" style="color:white;">Adventure</a></button>
+              </figcaption>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="product-item">
+              <a href="#"><img src="{{ url_for('static',filename='img3.png') }}" alt=""></a>
+              <figcaption class="fig" style="margin:0px 15px 30px 15px;">
+                <button class="btn btn-danger" id="submit"><a href="{{ url_for('main.animation') }}" style="color:white;">Animation</a></button>
+              </figcaption>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="product-item">
+              <a href="#"><img src="{{ url_for('static',filename='img4.png') }}" alt=""></a>
+              <figcaption class="fig" style="margin:0px 15px 30px 15px;">
+                <button class="btn btn-danger" id="submit"><a href="{{ url_for('main.scifi') }}" style="color:white;">Science Fiction</a></button>
+              </figcaption>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="product-item">
+              <a href="#"><img src="{{ url_for('static',filename='img5.png') }}" alt=""></a>
+              <figcaption class="fig" style="margin:0px 15px 30px 15px;">
+                <button class="btn btn-danger"><a href="{{ url_for('main.drama') }}" style="color:white;">Drama</a> </button>
+              </figcaption>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="product-item">
+              <a href="#"><img src="{{ url_for('static',filename='img6.png') }}" alt=""></a>
+              <figcaption class="fig" style="margin:0px 15px 30px 15px;">
+                <button class="btn btn-danger"><a href="{{ url_for('main.crime') }}" style="color:white;">Crime</a> </button>
+              </figcaption>
+            </div>
+          </div>
+
+</div>
+</div>
+</div>
+
+ <div id="about" class="about-main" style="padding-top:80px; margin-bottom:80px;">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                    <div class="wow fadeIn" data-wow-duration="1.5s" data-wow-delay="0.1s">
+                        <h2 class="block-title">About Us</h2>
+
+                        <p> We are consistently working on providing you better personalization features and improving the recommendation system.We provide you options to build custom watch lists. You get search movies based on your choices.</p>
+
+                        <p> With an aim of presenting you the cost-free features in a way having values beyond price we are working each day. Join us today! </p>
+                    </div>
+                </div>
+                <!-- end col -->
+                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                    <div class="wow fadeIn" data-wow-duration="0.6s" data-wow-delay="0.1s">
+                        <div class="about-images">
+                            <video playsinline="playsinline" autoplay="autoplay" muted="muted" loop="loop">
+                            <source src="{{ url_for('static',filename='video.mp4') }}" type="video/mp4">
+                            </video>
+                        </div>
+                    </div>
+                </div>
+                <!-- end col -->
+            </div>
+            <!-- end row -->
+        </div>
+</div>
+
+
+    <footer>
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="inner-content">
+              <p>Copyright &copy; 2021 Movie Recommendation System</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+ </div>
+
+	<script src="https://cdn.jsdelivr.net/npm/@tarekraafat/autocomplete.js@7.2.0/dist/js/autoComplete.min.js"></script>
+  <script type="text/javascript" src="{{url_for('static', filename='autocomplete.js')}}"></script>
+  <script type="text/javascript" src="{{url_for('static', filename='main.js')}}"></script>
+  <script type="text/javascript" src="{{url_for('static', filename='genre.js')}}"></script>
+  <script type="text/javascript" src="{{url_for('static', filename='recommend.js')}}"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+</body>
+</html>
